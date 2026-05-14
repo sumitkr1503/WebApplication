@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: devportfolio
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      # Persist the contacts.json log file
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Optional: Nginx reverse proxy (uncomment to use)
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: devportfolio-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf
+  #   depends_on:
+  #     - app
